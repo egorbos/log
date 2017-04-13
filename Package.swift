@@ -17,6 +17,6 @@ import PackageDescription
 let package = Package(
     name: "Log",
     dependencies: [
-        .Package(url: "https://github.com/swixbase/filesystem.git", Version(0,1,1))
+        .Package(url: "https://github.com/swixbase/filesystem.git", Version(0,1,2))
     ]
 )

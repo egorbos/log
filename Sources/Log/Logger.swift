@@ -30,9 +30,9 @@ public class Logger {
 
     /// The timestamp for log entry.
     fileprivate var date: String {
-        let formatter: DateFormatter = DateFormatter()
+        let formatter = DateFormatter()
         formatter.dateFormat = dateFormat
-        let currentDate: Date = Date()
+        let currentDate = Date()
         return formatter.string(from: currentDate)
     }
 
@@ -82,18 +82,18 @@ extension Logger: LogProtocol {
     ///
     public func record(entryMsg: String, file: String, line: Int, function: String, entryType: EntryType) {
 
-        let pipe: String = Delimiter.spacedPipe.rawValue
-        var entry: String = date
+        let pipe = Delimiter.spacedPipe.rawValue
+        var entry = date
         entry += pipe
         entry += entryType.description
         entry += pipe
-        entry += "\(NSString(string: file).lastPathComponent):\(String(line))"
+        entry += "\(file.lastPathComponent):\(String(line))"
         entry += pipe
         entry += function
         entry += Delimiter.spacedHyphen.rawValue
         entry += entryMsg
         entry += Delimiter.newLine.rawValue
-        let entryData: Data = entry.data(using: encoding)!
+        let entryData = entry.data(using: encoding)!
 
         outputStreamer.write(content: entryData)
         outputStreamer.synchronize()

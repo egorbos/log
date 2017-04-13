@@ -21,8 +21,8 @@ import Error
 
 class LogTests: XCTestCase {
     
-    let fsManager: FSManager = FSManager()
-    let fileHandler: FileHandler = FileHandler()
+    let fsManager = FSManager()
+    let fileHandler = FileHandler()
     
     static var allTests : [(String, (LogTests) -> () throws -> Void)] {
         return [
@@ -35,16 +35,8 @@ class LogTests: XCTestCase {
     }
     
     // MARK: - Helpers
-    
-    func createTestFile(atPath path: String) {
-        fsManager.createFile(atPath: path, content: nil)
-    }
-    
-    func createTestDirectory(atPath path: String) throws {
-        try fsManager.createDirectory(atPath: path)
-    }
-    
-    func deleteTestDirectory(atPath path: String) {
+
+    func deleteTestFile(atPath path: String) {
         do {
             try fsManager.deleteObject(atPath: path)
         } catch let error as SomeError {
@@ -57,9 +49,7 @@ class LogTests: XCTestCase {
     // MARK: - Tests
     
     func testLogVerboseMessage() throws {
-        let testdirPath = "\(fsManager.workPath)/testdirectory\(UUID().uuidString)"
-        let testfilePath = "\(testdirPath)/testfile"
-        try createTestDirectory(atPath: testdirPath)
+        let testfilePath = "\(fsManager.workPath)/\(UUID().uuidString)"
         
         let logger = try Logger(testfilePath)
         let log = Log(logger: logger)
@@ -72,13 +62,11 @@ class LogTests: XCTestCase {
         XCTAssertTrue(content.contains(#function))
         XCTAssertTrue(content.contains("Verbose"))
         XCTAssertTrue(content.contains("Message!"))
-        self.deleteTestDirectory(atPath: testdirPath)
+        deleteTestFile(atPath: testfilePath)
     }
     
     func testLogDebugMessage() throws {
-        let testdirPath = "\(fsManager.workPath)/testdirectory\(UUID().uuidString)"
-        let testfilePath = "\(testdirPath)/testfile"
-        try createTestDirectory(atPath: testdirPath)
+        let testfilePath = "\(fsManager.workPath)/\(UUID().uuidString)"
         
         let logger = try Logger(testfilePath)
         let log = Log(logger: logger)
@@ -91,14 +79,12 @@ class LogTests: XCTestCase {
         XCTAssertTrue(content.contains(#function))
         XCTAssertTrue(content.contains("Debug"))
         XCTAssertTrue(content.contains("Message1!"))
-        self.deleteTestDirectory(atPath: testdirPath)
+        deleteTestFile(atPath: testfilePath)
     }
     
     func testLogInfoMessage() throws {
-        let testdirPath = "\(fsManager.workPath)/testdirectory\(UUID().uuidString)"
-        let testfilePath = "\(testdirPath)/testfile"
-        try createTestDirectory(atPath: testdirPath)
-        
+        let testfilePath = "\(fsManager.workPath)/\(UUID().uuidString)"
+
         let logger = try Logger(testfilePath)
         let log = Log(logger: logger)
         
@@ -110,13 +96,11 @@ class LogTests: XCTestCase {
         XCTAssertTrue(content.contains(#function))
         XCTAssertTrue(content.contains("Info"))
         XCTAssertTrue(content.contains("Message2!"))
-        self.deleteTestDirectory(atPath: testdirPath)
+        deleteTestFile(atPath: testfilePath)
     }
     
     func testLogWarningMessage() throws {
-        let testdirPath = "\(fsManager.workPath)/testdirectory\(UUID().uuidString)"
-        let testfilePath = "\(testdirPath)/testfile"
-        try createTestDirectory(atPath: testdirPath)
+        let testfilePath = "\(fsManager.workPath)/\(UUID().uuidString)"
         
         let logger = try Logger(testfilePath)
         let log = Log(logger: logger)
@@ -129,13 +113,11 @@ class LogTests: XCTestCase {
         XCTAssertTrue(content.contains(#function))
         XCTAssertTrue(content.contains("Warning"))
         XCTAssertTrue(content.contains("Message3!"))
-        self.deleteTestDirectory(atPath: testdirPath)
+        deleteTestFile(atPath: testfilePath)
     }
     
     func testLogErrorMessage() throws {
-        let testdirPath = "\(fsManager.workPath)/testdirectory\(UUID().uuidString)"
-        let testfilePath = "\(testdirPath)/testfile"
-        try createTestDirectory(atPath: testdirPath)
+        let testfilePath = "\(fsManager.workPath)/\(UUID().uuidString)"
         
         let logger = try Logger(testfilePath)
         let log = Log(logger: logger)
@@ -148,7 +130,7 @@ class LogTests: XCTestCase {
         XCTAssertTrue(content.contains(#function))
         XCTAssertTrue(content.contains("Error"))
         XCTAssertTrue(content.contains("Message4!"))
-        self.deleteTestDirectory(atPath: testdirPath)
+        deleteTestFile(atPath: testfilePath)
     }
     
 }
