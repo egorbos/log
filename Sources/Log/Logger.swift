@@ -44,7 +44,7 @@ public class Logger {
     ///   - dateFormat: The date format of timestamp for log entry.
     ///                 Default value is ISO 8601 date format `yyyy-MM-dd'T'HH:mm:ss.SSSZ`.
     ///
-    /// - Throws: `FileSystemError.openFileAtPathFailed`
+    /// - Throws: `FSError.openFileAtPathFailed`
     ///
     public convenience init(_ logPath: String, encoding: String.Encoding = .utf8, dateFormat: String) throws {
         try self.init(logPath, encoding: encoding)
@@ -57,7 +57,7 @@ public class Logger {
     ///   - logPath:    Path to the log file in which it is necessary to make record.
     ///   - encoding:   Encoding of the text of log. Default value is utf8.
     ///
-    /// - Throws: `FileSystemError.openFileAtPathFailed`
+    /// - Throws: `FSError.openFileAtPathFailed`
     ///
     public init(_ logPath: String, encoding: String.Encoding = .utf8) throws {
         self.encoding = encoding
