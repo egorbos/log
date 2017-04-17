@@ -14,7 +14,7 @@
 
 import Foundation
 
-internal enum Delimiter: String {
+public enum Delimiter: String {
 
     /// Specifies a pipe character with a space character on each side.
     case spacedPipe = " | "

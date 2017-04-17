@@ -15,17 +15,17 @@
 import XCTest
 import Foundation
 import Filesystem
-import Error
 
 @testable import Log
 
 class LogTests: XCTestCase {
     
-    let fsManager = FSManager()
+    let fileSystem = FileSystem()
     let fileHandler = FileHandler()
     
     static var allTests : [(String, (LogTests) -> () throws -> Void)] {
         return [
+            ("testCreateFileInNonExistFolder", testCreateFileInNonExistFolder),
             ("testLogVerboseMessage", testLogVerboseMessage),
             ("testLogDebugMessage", testLogDebugMessage),
             ("testLogInfoMessage", testLogInfoMessage),
@@ -36,20 +36,24 @@ class LogTests: XCTestCase {
     
     // MARK: - Helpers
 
-    func deleteTestFile(atPath path: String) {
-        do {
-            try fsManager.deleteObject(atPath: path)
-        } catch let error as SomeError {
-            XCTFail(error.description)
-        } catch {
-            XCTFail("Unhandled error")
-        }
+    func deleteTestFile(atPath path: String) throws {
+        try fileSystem.deleteObject(atPath: path)
     }
     
     // MARK: - Tests
     
+    func testCreateFileInNonExistFolder() throws {
+        let testfilePath = "/Foo/bar"
+        
+        do {
+            let _ = try Logger(testfilePath)
+        } catch let error as Logger.Error {
+            XCTAssertTrue(error == Logger.Error.couldNotOpenFile)
+        }
+    }
+    
     func testLogVerboseMessage() throws {
-        let testfilePath = "\(fsManager.workPath)/\(UUID().uuidString)"
+        let testfilePath = "\(fileSystem.workPath)/\(UUID().uuidString)"
         
         let logger = try Logger(testfilePath)
         let log = Log(logger: logger)
@@ -62,11 +66,11 @@ class LogTests: XCTestCase {
         XCTAssertTrue(content.contains(#function))
         XCTAssertTrue(content.contains("Verbose"))
         XCTAssertTrue(content.contains("Message!"))
-        deleteTestFile(atPath: testfilePath)
+        try deleteTestFile(atPath: testfilePath)
     }
     
     func testLogDebugMessage() throws {
-        let testfilePath = "\(fsManager.workPath)/\(UUID().uuidString)"
+        let testfilePath = "\(fileSystem.workPath)/\(UUID().uuidString)"
         
         let logger = try Logger(testfilePath)
         let log = Log(logger: logger)
@@ -79,11 +83,11 @@ class LogTests: XCTestCase {
         XCTAssertTrue(content.contains(#function))
         XCTAssertTrue(content.contains("Debug"))
         XCTAssertTrue(content.contains("Message1!"))
-        deleteTestFile(atPath: testfilePath)
+        try deleteTestFile(atPath: testfilePath)
     }
     
     func testLogInfoMessage() throws {
-        let testfilePath = "\(fsManager.workPath)/\(UUID().uuidString)"
+        let testfilePath = "\(fileSystem.workPath)/\(UUID().uuidString)"
 
         let logger = try Logger(testfilePath)
         let log = Log(logger: logger)
@@ -96,11 +100,11 @@ class LogTests: XCTestCase {
         XCTAssertTrue(content.contains(#function))
         XCTAssertTrue(content.contains("Info"))
         XCTAssertTrue(content.contains("Message2!"))
-        deleteTestFile(atPath: testfilePath)
+        try deleteTestFile(atPath: testfilePath)
     }
     
     func testLogWarningMessage() throws {
-        let testfilePath = "\(fsManager.workPath)/\(UUID().uuidString)"
+        let testfilePath = "\(fileSystem.workPath)/\(UUID().uuidString)"
         
         let logger = try Logger(testfilePath)
         let log = Log(logger: logger)
@@ -113,11 +117,11 @@ class LogTests: XCTestCase {
         XCTAssertTrue(content.contains(#function))
         XCTAssertTrue(content.contains("Warning"))
         XCTAssertTrue(content.contains("Message3!"))
-        deleteTestFile(atPath: testfilePath)
+        try deleteTestFile(atPath: testfilePath)
     }
     
     func testLogErrorMessage() throws {
-        let testfilePath = "\(fsManager.workPath)/\(UUID().uuidString)"
+        let testfilePath = "\(fileSystem.workPath)/\(UUID().uuidString)"
         
         let logger = try Logger(testfilePath)
         let log = Log(logger: logger)
@@ -130,7 +134,7 @@ class LogTests: XCTestCase {
         XCTAssertTrue(content.contains(#function))
         XCTAssertTrue(content.contains("Error"))
         XCTAssertTrue(content.contains("Message4!"))
-        deleteTestFile(atPath: testfilePath)
+        try deleteTestFile(atPath: testfilePath)
     }
     
 }

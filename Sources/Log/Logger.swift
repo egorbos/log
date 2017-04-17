@@ -16,6 +16,12 @@ import Foundation
 import Filesystem
 
 public class Logger {
+    
+    // MARK: Error enum
+    
+    public enum Error: Swift.Error {
+        case couldNotOpenFile
+    }
 
     // MARK: Properties, initialization, deinitialization
 
@@ -44,11 +50,15 @@ public class Logger {
     ///   - dateFormat: The date format of timestamp for log entry.
     ///                 Default value is ISO 8601 date format `yyyy-MM-dd'T'HH:mm:ss.SSSZ`.
     ///
-    /// - Throws: `FSError.openFileAtPathFailed`
+    /// - Throws: `Logger.Error.couldNotOpenFile`
     ///
     public convenience init(_ logPath: String, encoding: String.Encoding = .utf8, dateFormat: String) throws {
-        try self.init(logPath, encoding: encoding)
-        self.dateFormat = dateFormat
+        do {
+            try self.init(logPath, encoding: encoding)
+            self.dateFormat = dateFormat
+        } catch {
+            throw Error.couldNotOpenFile
+        }
     }
 
     /// Initialization.
@@ -57,11 +67,15 @@ public class Logger {
     ///   - logPath:    Path to the log file in which it is necessary to make record.
     ///   - encoding:   Encoding of the text of log. Default value is utf8.
     ///
-    /// - Throws: `FSError.openFileAtPathFailed`
+    /// - Throws: `Logger.Error.couldNotOpenFile`
     ///
     public init(_ logPath: String, encoding: String.Encoding = .utf8) throws {
-        self.encoding = encoding
-        self.outputStreamer = try FileOutputStreamer(file: logPath)
+        do {
+            self.outputStreamer = try FileOutputStreamer(file: logPath)
+            self.encoding = encoding
+        } catch {
+            throw Error.couldNotOpenFile
+        }
     }
 
 }
@@ -81,20 +95,18 @@ extension Logger: LogProtocol {
     ///                warning, error.
     ///
     public func record(entryMsg: String, file: String, line: Int, function: String, entryType: EntryType) {
-
         let pipe = Delimiter.spacedPipe.rawValue
         var entry = date
-        entry += pipe
-        entry += entryType.description
-        entry += pipe
-        entry += "\(file.lastPathComponent):\(String(line))"
-        entry += pipe
-        entry += function
-        entry += Delimiter.spacedHyphen.rawValue
-        entry += entryMsg
-        entry += Delimiter.newLine.rawValue
+        entry.append(pipe)
+        entry.append(entryType.description)
+        entry.append(pipe)
+        entry.append("\(file.lastPathComponent):\(String(line))")
+        entry.append(pipe)
+        entry.append(function)
+        entry.append(Delimiter.spacedHyphen.rawValue)
+        entry.append(entryMsg)
+        entry.append(Delimiter.newLine.rawValue)
         let entryData = entry.data(using: encoding)!
-
         outputStreamer.write(content: entryData)
         outputStreamer.synchronize()
     }
